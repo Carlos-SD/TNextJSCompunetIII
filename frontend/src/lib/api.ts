@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://nodejs-taller-2025-2-0zx4.onrender.com/api",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://backend-tnestjscompunetiii.onrender.com",
     headers: {
         "Content-Type": "application/json"
     }
