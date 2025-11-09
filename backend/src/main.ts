@@ -6,11 +6,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Health check endpoint for Render (before global prefix)
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  });
-  
   const allowedOrigins = [
     'http://localhost:3001',
     'http://localhost:3000',
@@ -22,19 +17,19 @@ async function bootstrap() {
     allowedOrigins.push(process.env.FRONTEND_URL);
   }
 
-  // Configurar CORS
+  // Configurar CORS PRIMERO (antes de cualquier otra configuración)
   app.enableCors({
     origin: (origin, callback) => {
       // Permitir requests sin origin (como Postman, mobile apps, etc.)
       if (!origin) return callback(null, true);
       
-      // Permitir si está en la lista de orígenes permitidos
-      if (allowedOrigins.includes(origin)) {
+      // Permitir todos los dominios de Vercel (preview deployments, etc.)
+      if (origin.includes('.vercel.app')) {
         return callback(null, true);
       }
       
-      // Permitir todos los dominios de Vercel (preview deployments, etc.)
-      if (origin.includes('.vercel.app')) {
+      // Permitir si está en la lista de orígenes permitidos
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       
@@ -43,12 +38,20 @@ async function bootstrap() {
         return callback(null, true);
       }
       
-      // En producción, rechazar orígenes no permitidos
-      callback(new Error('Not allowed by CORS'));
+      // En producción, permitir todos los orígenes temporalmente para debugging
+      // TODO: Restringir a orígenes específicos en producción
+      return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
+  
+  // Health check endpoint for Render (después de CORS)
+  app.getHttpAdapter().get('/', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
   
   app.setGlobalPrefix('api');
