@@ -4,7 +4,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex">
       {/* Sección izquierda - Formulario */}
-      <div className="w-full lg:w-[45%] bg-[#0B3D20] flex items-center justify-center p-8">
+      <div className="w-full lg:w-[45%] bg-secondary flex items-center justify-center p-8">
         <RegisterForm />
       </div>
 

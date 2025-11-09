@@ -6,6 +6,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
+  // Health check endpoint for Render (before global prefix)
+  app.getHttpAdapter().get('/', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+  
   const allowedOrigins = [
     'http://localhost:3001',
     'http://localhost:3000',
@@ -17,6 +22,7 @@ async function bootstrap() {
     allowedOrigins.push(process.env.FRONTEND_URL);
   }
 
+  // Configurar CORS
   app.enableCors({
     origin: (origin, callback) => {
       // Permitir requests sin origin (como Postman, mobile apps, etc.)
@@ -75,8 +81,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application is running on: http://localhost:${process.env.PORT ?? 3000}/api`);
-  console.log(`Swagger documentation: http://localhost:${process.env.PORT ?? 3000}/docs`);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application is running on: http://0.0.0.0:${port}/api`);
+  console.log(`Swagger documentation: http://0.0.0.0:${port}/docs`);
 }
 bootstrap();

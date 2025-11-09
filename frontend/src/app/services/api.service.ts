@@ -8,8 +8,13 @@ const apiService = {
   },
 
   post: async <T>(url: string, data?: any, config?: AxiosRequestConfig) => {
-    const response = await axiosInstance.post<T>(url, data, config);
-    return response.data;
+    try {
+      const response = await axiosInstance.post<T>(url, data, config);
+      return response.data;
+    } catch (error: any) {
+      // Re-lanzar el error para que pueda ser manejado en los componentes
+      throw error;
+    }
   },
 
   put: async <T>(url: string, data?: any, config?: AxiosRequestConfig) => {
