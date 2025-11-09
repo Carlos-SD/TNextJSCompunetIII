@@ -29,10 +29,14 @@ export default function LoginForm() {
 
     try {
       await authService.login(formData);
-      router.push('/');
+      router.push('/dashboard');
+      router.refresh();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al iniciar sesión');
-    } finally {
+      console.error('Login error:', err);
+      const errorMessage = err?.response?.data?.message 
+        || err?.message 
+        || 'Error al iniciar sesión. Verifica tus credenciales.';
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -63,7 +67,6 @@ export default function LoginForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-text-light mb-2 text-sm font-medium">
-            Iniciar Sesión con Email
           </label>
           
           <input

@@ -47,10 +47,14 @@ export default function RegisterForm() {
 
     try {
       await authService.register(formData);
-      router.push('/');
+      router.push('/dashboard');
+      router.refresh();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al registrar usuario');
-    } finally {
+      console.error('Register error:', err);
+      const errorMessage = err?.response?.data?.message 
+        || err?.message 
+        || 'Error al registrar usuario. Intenta nuevamente.';
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -80,9 +84,6 @@ export default function RegisterForm() {
       {/* Formulario */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-text-light mb-2 text-sm font-medium">
-            Registrarse con Email
-          </label>
           
           <input
             type="text"
