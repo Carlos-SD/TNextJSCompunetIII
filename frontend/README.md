@@ -20,6 +20,35 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Gestion de Estado con Zustand
+
+Este proyecto utiliza Zustand para la gestion de estado global. Se han implementado stores para:
+
+- **Auth Store**: Manejo de autenticacion (login, logout, usuario actual)
+- **Events Store**: Gestion de eventos deportivos
+- **Bets Store**: Manejo de apuestas del usuario
+- **Toast Store**: Sistema de notificaciones
+
+Los stores se encuentran en `src/app/store/`.
+
+## Sistema de Notificaciones Toast
+
+El proyecto incluye un sistema de notificaciones tipo toast que reemplaza los `window.alert()` tradicionales. Las notificaciones aparecen en la esquina superior derecha y se cierran automaticamente.
+
+Uso basico:
+
+```typescript
+import { toast } from '@/app/store/toast.store';
+
+// Tipos de notificaciones
+toast.success('Operacion exitosa');
+toast.error('Ocurrio un error');
+toast.info('Informacion importante');
+toast.warning('Advertencia');
+```
+
+Las notificaciones ya estan integradas en las acciones de autenticacion (login, logout).
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

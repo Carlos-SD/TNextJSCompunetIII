@@ -6,15 +6,37 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const allowedOrigins = [
+        'http://localhost:3001',
+        'http://localhost:3000',
+        'https://t-next-js-compunet-iii.vercel.app',
+    ];
+    if (process.env.FRONTEND_URL) {
+        allowedOrigins.push(process.env.FRONTEND_URL);
+    }
     app.enableCors({
-        origin: [
-            'http://localhost:3001',
-            'http://localhost:3000',
-            process.env.FRONTEND_URL || 'http://localhost:3001',
-        ],
+        origin: (origin, callback) => {
+            if (!origin)
+                return callback(null, true);
+            if (origin.includes('.vercel.app')) {
+                return callback(null, true);
+            }
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+            if (process.env.NODE_ENV !== 'production') {
+                return callback(null, true);
+            }
+            return callback(null, true);
+        },
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+    });
+    app.getHttpAdapter().get('/', (req, res) => {
+        res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new common_1.ValidationPipe({
@@ -37,9 +59,10 @@ async function bootstrap() {
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('docs', app, document);
-    await app.listen(process.env.PORT ?? 3000);
-    console.log(`Application is running on: http://localhost:${process.env.PORT ?? 3000}/api`);
-    console.log(`Swagger documentation: http://localhost:${process.env.PORT ?? 3000}/docs`);
+    const port = process.env.PORT ?? 3000;
+    await app.listen(port, '0.0.0.0');
+    console.log(`Application is running on: http://0.0.0.0:${port}/api`);
+    console.log(`Swagger documentation: http://0.0.0.0:${port}/docs`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

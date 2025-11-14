@@ -48,7 +48,8 @@ export default function DashboardPage() {
           balance: profile.balance ?? 0,
         });
 
-        const openEvents: any = await eventsService.getOpen();
+        const openEventsResponse: any = await eventsService.getOpen();
+        const openEvents = openEventsResponse?.data || openEventsResponse || [];
         const normalized = (Array.isArray(openEvents) ? openEvents : []).map((ev: any) => ({
           ...ev,
           options: (ev.options || []).map((opt: any, i: number) => ({
@@ -77,7 +78,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-neutral-dark">
-      <Navbar logoSrc={'/images/logo.png'} balance={user?.balance} />
+      <Navbar logoSrc={'/images/logo.png'} balance={user?.balance} onLogout={handleLogout} />
       <div className="min-h-[70px]" />
       <div className="w-full">
         <div className="flex">
