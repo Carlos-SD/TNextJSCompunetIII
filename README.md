@@ -171,6 +171,39 @@ Authorization: Bearer {tu_token}
 - `POST /bets/event/:eventId/process` - Procesar apuestas (admin)
 - `DELETE /bets/:id` - Eliminar apuesta (autenticado)
 
+## Frontend
+
+El frontend está desarrollado con Next.js 16 y se encuentra en la carpeta `/frontend`.
+
+### Gestion de Estado con Zustand
+
+El proyecto utiliza Zustand para la gestion de estado global. Se han implementado stores para:
+
+- **Auth Store**: Manejo de autenticacion (login, logout, usuario actual)
+- **Events Store**: Gestion de eventos deportivos
+- **Bets Store**: Manejo de apuestas del usuario
+- **Toast Store**: Sistema de notificaciones
+
+Los stores se encuentran en `frontend/src/app/store/`.
+
+### Sistema de Notificaciones Toast
+
+El proyecto incluye un sistema de notificaciones tipo toast que reemplaza los `window.alert()` tradicionales. Las notificaciones aparecen en la esquina superior derecha y se cierran automaticamente.
+
+Uso basico:
+
+```typescript
+import { toast } from '@/app/store/toast.store';
+
+// Tipos de notificaciones
+toast.success('Operacion exitosa');
+toast.error('Ocurrio un error');
+toast.info('Informacion importante');
+toast.warning('Advertencia');
+```
+
+Las notificaciones ya estan integradas en las acciones de autenticacion (login, logout).
+
 ## Características
 
 ### ✅ Autenticación (5%)
