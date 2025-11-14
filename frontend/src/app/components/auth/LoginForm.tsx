@@ -57,7 +57,7 @@ export default function LoginForm() {
 
       {/* Título */}
       <h1 className="text-3xl font-bold text-text-light text-center mb-2">
-        Bienvenido a Footballers Bets!
+        Bienvenido a Apostólicos!
       </h1>
       <p className="text-text-light text-center mb-8 opacity-90">
         

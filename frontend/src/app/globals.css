@@ -1,35 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  
-  --primary: #1DB954;
-  --secondary: #0B3D20;
-  --neutral-dark: #121212;
-  --neutral-medium: #2C2C2C;
-  --text-light: #F5F5F5;
-  --accent-gold: #FFD700;
-}
+  /* Dark background with green accents */
+  --background: #071216; /* very dark blue-green */
+  --foreground: #E9F8EE; /* light, slightly green-tinted text */
 
-@theme inline {
+  --primary: #1DB954; /* bright green */
+  --primary-600: #17a34a;
+  --primary-400: #3ad06a;
+  --secondary: #0B3D20; /* deep green */
+  --neutral-dark: #0f1720; /* panels */
+  --neutral-medium: #1f2937; /* card bg */
+  --neutral-light: #9CA3AF; /* muted text */
+  --text-light: #E6F6EA;
+  --accent-gold: #FFD700;
+
+  /* Compatibility variables used across the app */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  --color-primary: #1DB954;
-  --color-secondary: #0B3D20;
-  --color-neutral-dark: #121212;
-  --color-neutral-medium: #2C2C2C;
-  --color-text-light: #F5F5F5;
-  --color-accent-gold: #FFD700;
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-neutral-dark: var(--neutral-dark);
+  --color-neutral-medium: var(--neutral-medium);
+  --color-text-light: var(--text-light);
+  --color-accent-gold: var(--accent-gold);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* slightly adjust for dark mode */
+    --background: #071216;
+    --foreground: #F0FBF3;
   }
 }
 
@@ -38,3 +39,4 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+

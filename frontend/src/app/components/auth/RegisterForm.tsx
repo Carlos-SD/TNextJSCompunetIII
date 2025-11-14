@@ -75,7 +75,7 @@ export default function RegisterForm() {
 
       {/* Título */}
       <h1 className="text-3xl font-bold text-text-light text-center mb-2">
-        Únete a Footballers Bets!
+        Únete a Apostólicos!
       </h1>
       <p className="text-text-light text-center mb-8 opacity-90">
         Crea tu cuenta para comenzar
