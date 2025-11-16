@@ -6,6 +6,7 @@ import { useAuthStore } from '@/app/store/auth.store';
 import { useEventsStore } from '@/app/store/events.store';
 import { useBetsStore } from '@/app/store/bets.store';
 import { toast } from '@/app/store/toast.store';
+import userService from '@/app/services/user.service';
 import Breadcrumb from '../components/Breadcrumb';
 import Navbar from './components/Navbar';
 import EventsList from './components/EventsList';
@@ -14,7 +15,7 @@ import Sidebar from './components/Sidebar';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, logout, checkAuth } = useAuthStore();
+  const { user, logout, checkAuth, updateUser } = useAuthStore();
   const { events, isLoading, error: eventsError, fetchOpenEvents } = useEventsStore();
   const { createBet } = useBetsStore();
   
@@ -58,6 +59,15 @@ export default function DashboardPage() {
       toast.success('Apuesta realizada exitosamente');
       setShowBetSlip(false);
       setBetLine(null);
+      
+      // Actualizar el saldo del usuario después de la apuesta
+      try {
+        const updatedUser = await userService.getProfile();
+        updateUser(updatedUser);
+      } catch (profileError) {
+        console.error('Error al actualizar perfil:', profileError);
+        // No mostramos error al usuario ya que la apuesta fue exitosa
+      }
       
       // Recargar eventos para refrescar datos
       fetchOpenEvents();

@@ -22,7 +22,7 @@ export const useBetsStore = create<BetsState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  fetchUserBets: async (userId: string) => {
+  fetchUserBets: async (userId?: string) => {
     if (!userId) {
       set({ isLoading: false, error: 'Usuario no autenticado' });
       return;
