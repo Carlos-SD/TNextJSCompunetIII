@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@/app/services/auth/auth.service';
 import userService from '@/app/services/user.service';
 import eventsService from '@/app/services/events.service';
+import betsService from '@/app/services/bets.service';
 import Navbar from './components/Navbar';
 import EventsList from './components/EventsList';
 import BetSlip from './components/BetSlip';
@@ -76,6 +77,42 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
+  const handlePlaceBet = async (line: any, stake: number) => {
+    if (!line || stake <= 0) {
+      return;
+    }
+
+    if (!user || user.balance < stake) {
+      setError('Saldo insuficiente para realizar esta apuesta');
+      return;
+    }
+
+    try {
+      await betsService.createBet({
+        userId: user.id,
+        eventId: line.eventId,
+        selectedOption: line.optionName,
+        amount: stake,
+      });
+
+      // Recargar perfil para actualizar balance
+      const profileRes: any = await userService.getProfile();
+      const profile = profileRes?.user ?? profileRes;
+      setUser({
+        id: profile.id,
+        username: profile.username || profile.name || 'Usuario',
+        balance: profile.balance ?? 0,
+      });
+
+      setShowBetSlip(false);
+      setBetLine(null);
+    } catch (err: any) {
+      console.error(err);
+      const errorMsg = err?.response?.data?.message || 'Error al realizar la apuesta';
+      setError(errorMsg);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-dark">
       <Navbar logoSrc={'/images/logo.png'} balance={user?.balance} onLogout={handleLogout} />
@@ -136,10 +173,7 @@ export default function DashboardPage() {
                 open={showBetSlip}
                 line={betLine}
                 onClose={() => setShowBetSlip(false)}
-                onPlaceBet={(line, stake) => {
-                  console.log('Place bet', line, stake);
-                  setShowBetSlip(false);
-                }}
+                onPlaceBet={handlePlaceBet}
               />
 
             </div>

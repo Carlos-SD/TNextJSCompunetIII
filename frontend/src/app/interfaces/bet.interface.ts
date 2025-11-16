@@ -22,6 +22,7 @@ export interface Bet {
 }
 
 export interface CreateBetDto {
+  userId: string;
   eventId: string;
   selectedOption: string;
   amount: number;

@@ -2,19 +2,16 @@ import apiService from './api.service';
 import { Bet, CreateBetDto } from '../interfaces/bet.interface';
 
 export const betsService = {
-  async getUserBets(): Promise<Bet[]> {
-    const response = await apiService.get<Bet[]>('/bets/my-bets');
-    return response.data;
+  async getUserBets(userId: string): Promise<Bet[]> {
+    return await apiService.get<Bet[]>(`/bets/user/${userId}`);
   },
 
   async createBet(data: CreateBetDto): Promise<Bet> {
-    const response = await apiService.post<Bet>('/bets', data);
-    return response.data;
+    return await apiService.post<Bet>('/bets', data);
   },
 
   async getBetById(id: string): Promise<Bet> {
-    const response = await apiService.get<Bet>(`/bets/${id}`);
-    return response.data;
+    return await apiService.get<Bet>(`/bets/${id}`);
   },
 };
 

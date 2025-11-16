@@ -21,6 +21,13 @@ type Props = {
 export default function BetSlip({ open, line, onClose, onPlaceBet }: Props) {
   const [stake, setStake] = useState<number>(0);
 
+  // Limpiar el stake cuando se cierra o cambia la línea
+  React.useEffect(() => {
+    if (!open) {
+      setStake(0);
+    }
+  }, [open]);
+
   const potential = line ? Math.round(stake * (line.odd)) : 0;
 
   if (!line && !open) return null;
