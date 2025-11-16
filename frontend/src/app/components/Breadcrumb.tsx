@@ -3,29 +3,42 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaHome, FaChevronRight } from 'react-icons/fa';
+import React from 'react';
+
+type BreadcrumbItem = {
+  label: string;
+  href: string;
+  icon?: React.ReactNode;
+};
 
 export default function Breadcrumb() {
   const pathname = usePathname();
 
   // Generate breadcrumb items from pathname
-  const generateBreadcrumbs = () => {
+  const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const paths = pathname.split('/').filter((path) => path);
     
-    const breadcrumbs = [
-      { label: 'Inicio', href: '/', icon: <FaHome /> },
+    if (pathname === '/dashboard') {
+      return [{ label: 'Dashboard', href: '/dashboard', icon: <FaHome /> }];
+    }
+    
+    const breadcrumbs: BreadcrumbItem[] = [
+      { label: 'Inicio', href: '/dashboard', icon: <FaHome /> },
     ];
 
     let currentPath = '';
     paths.forEach((path) => {
       currentPath += `/${path}`;
       
-      // Format the path label (capitalize and replace hyphens)
+      if (path.toLowerCase() === 'dashboard' && currentPath === '/dashboard') {
+        return;
+      }
+      
       let label = path
         .split('-')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
-      // Custom labels for specific routes
       const customLabels: Record<string, string> = {
         dashboard: 'Dashboard',
         login: 'Iniciar Sesión',
@@ -33,13 +46,14 @@ export default function Breadcrumb() {
         events: 'Eventos',
         bets: 'Apuestas',
         profile: 'Perfil',
+        'my-bets': 'Mis Apuestas',
       };
 
       if (customLabels[path.toLowerCase()]) {
         label = customLabels[path.toLowerCase()];
       }
 
-      breadcrumbs.push({ label, href: currentPath, icon: null });
+      breadcrumbs.push({ label, href: currentPath });
     });
 
     return breadcrumbs;
@@ -47,14 +61,13 @@ export default function Breadcrumb() {
 
   const breadcrumbs = generateBreadcrumbs();
 
-  // Don't show breadcrumb on home page
   if (pathname === '/') {
     return null;
   }
 
   return (
-    <nav className="bg-neutral-700/30 backdrop-blur-md border-b border-brand/20 px-4 py-3">
-      <div className="max-w-7xl mx-auto">
+    <nav className="w-full bg-neutral-700/30 backdrop-blur-md border-b border-brand/20 px-4 py-3 relative z-40">
+      <div className="w-full">
         <ol className="flex items-center space-x-2 text-sm">
           {breadcrumbs.map((breadcrumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
@@ -68,7 +81,7 @@ export default function Breadcrumb() {
                 
                 {isLast ? (
                   <span className="flex items-center gap-2 text-brand font-semibold">
-                    {breadcrumb.icon}
+                    {breadcrumb.icon && breadcrumb.icon}
                     {breadcrumb.label}
                   </span>
                 ) : (

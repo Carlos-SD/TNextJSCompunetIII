@@ -1,20 +1,15 @@
 import React from 'react';
 
-const Navbar = ({ logoSrc, balance, onLogout, username }: { logoSrc?: string; balance?: number | string; onLogout?: () => void; username?: string }) => {
+const Navbar = ({ logoSrc, balance, username }: { logoSrc?: string; balance?: number | string; username?: string }) => {
   return (
-    <nav className="w-full bg-gradient-to-r from-neutral-medium via-neutral-medium/95 to-neutral-medium backdrop-blur-md border-b border-neutral-700/50 shadow-lg">
+    <nav className="fixed top-0 left-0 right-0 w-full bg-gradient-to-r from-neutral-medium via-neutral-medium/95 to-neutral-medium backdrop-blur-md border-b border-neutral-700/50 shadow-lg z-50">
       <div className="max-w-full px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo y navegación */}
-          <div className="flex items-center gap-8">
+          {/* Logo */}
+          <div className="flex items-center">
             <div className="text-brand font-extrabold text-2xl md:text-3xl tracking-wide" style={{color: '#08fc1cff'}}>
               Apostólicos
             </div>
-            <ul className="hidden md:flex gap-2 text-sm text-text-light/80">
-              <li className="px-4 py-2 hover:bg-neutral-dark/40 rounded-lg cursor-pointer transition-colors hover:text-text-light font-medium">
-                Deportes
-              </li>
-            </ul>
           </div>
 
           {/* Usuario, Saldo y acciones */}
@@ -35,14 +30,6 @@ const Navbar = ({ logoSrc, balance, onLogout, username }: { logoSrc?: string; ba
                 <p className="text-base font-bold text-primary">{typeof balance === 'number' ? balance.toLocaleString() : balance ?? '0.00'}</p>
               </div>
             </div>
-            {onLogout && (
-              <button
-                onClick={onLogout}
-                className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg shadow-red-600/20 hover:shadow-red-600/30 active:scale-95"
-              >
-                Cerrar Sesión
-              </button>
-            )}
           </div>
         </div>
       </div>

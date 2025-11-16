@@ -20,6 +20,7 @@ export default function DashboardPage() {
   
   const [betLine, setBetLine] = useState<any | null>(null);
   const [showBetSlip, setShowBetSlip] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!checkAuth()) {
@@ -79,14 +80,14 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-neutral-dark">
-      <Navbar logoSrc={'/images/logo.png'} balance={user?.balance} onLogout={handleLogout} username={user?.username} />
-      <div className="px-6 pt-4">
-        <Breadcrumb />
-      </div>
-      <div className="w-full px-6 pt-2">
-        <Sidebar username={user?.username} balance={user?.balance} />
-
-        <div className="w-full">
+      <Navbar logoSrc={'/images/logo.png'} balance={user?.balance} username={user?.username} />
+      <Sidebar username={user?.username} balance={user?.balance} onLogout={handleLogout} onToggle={setSidebarOpen} />
+      
+      <div className={`transition-all duration-300 pt-[73px] ${sidebarOpen ? 'ml-72' : 'ml-0'}`}>
+        <div className="px-6 pt-4">
+          <Breadcrumb />
+        </div>
+        <div className="w-full px-6 pt-2">
           <div className="max-w-7xl mx-auto py-8">
 
               {/* Loading State */}
