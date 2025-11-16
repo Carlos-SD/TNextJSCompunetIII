@@ -3,8 +3,7 @@ import { Event, CreateEventDto, CloseEventDto } from '../interfaces/event.interf
 
 export const eventsService = {
   async getAllEvents(): Promise<Event[]> {
-    const response = await apiService.get<Event[]>('/events');
-    return response.data;
+    return await apiService.get<Event[]>('/events');
   },
 
   async getOpen() {
@@ -12,23 +11,19 @@ export const eventsService = {
   },
 
   async getOpenEvents(): Promise<Event[]> {
-    const response = await apiService.get<Event[]>('/events/open');
-    return response.data;
+    return await apiService.get<Event[]>('/events/open');
   },
 
   async getEventById(id: string): Promise<Event> {
-    const response = await apiService.get<Event>(`/events/${id}`);
-    return response.data;
+    return await apiService.get<Event>(`/events/${id}`);
   },
 
   async createEvent(data: CreateEventDto): Promise<Event> {
-    const response = await apiService.post<Event>('/events', data);
-    return response.data;
+    return await apiService.post<Event>('/events', data);
   },
 
   async closeEvent(id: string, data: CloseEventDto): Promise<Event> {
-    const response = await apiService.patch<Event>(`/events/${id}/close`, data);
-    return response.data;
+    return await apiService.patch<Event>(`/events/${id}/close`, data);
   },
 };
 

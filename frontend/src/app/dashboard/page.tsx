@@ -2,181 +2,145 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/app/services/auth/auth.service';
-import userService from '@/app/services/user.service';
-import eventsService from '@/app/services/events.service';
-import betsService from '@/app/services/bets.service';
+import { useAuthStore } from '@/app/store/auth.store';
+import { useEventsStore } from '@/app/store/events.store';
+import { useBetsStore } from '@/app/store/bets.store';
+import { toast } from '@/app/store/toast.store';
+import Breadcrumb from '../components/Breadcrumb';
 import Navbar from './components/Navbar';
 import EventsList from './components/EventsList';
 import BetSlip from './components/BetSlip';
 import Sidebar from './components/Sidebar';
 
-type User = {
-  id: string;
-  username: string;
-  balance: number;
-};
-
-type EventOption = {
-  id: string;
-  name: string;
-  odd: number;
-};
 export default function DashboardPage() {
   const router = useRouter();
-
-  const [user, setUser] = useState<User | null>(null);
-  const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user, logout, checkAuth } = useAuthStore();
+  const { events, isLoading, error: eventsError, fetchOpenEvents } = useEventsStore();
+  const { createBet } = useBetsStore();
+  
   const [betLine, setBetLine] = useState<any | null>(null);
   const [showBetSlip, setShowBetSlip] = useState(false);
 
   useEffect(() => {
-    if (!authService.isAuthenticated()) {
+    if (!checkAuth()) {
       router.push('/login');
       return;
     }
 
-    const load = async () => {
-      setLoading(true);
-      try {
-        const profileRes: any = await userService.getProfile();
-        const profile = profileRes?.user ?? profileRes;
-        setUser({
-          id: profile.id,
-          username: profile.username || profile.name || 'Usuario',
-          balance: profile.balance ?? 0,
-        });
-
-        const openEventsResponse: any = await eventsService.getOpen();
-        const openEvents = openEventsResponse?.data || openEventsResponse || [];
-        const normalized = (Array.isArray(openEvents) ? openEvents : []).map((ev: any) => ({
-          ...ev,
-          options: (ev.options || []).map((opt: any, i: number) => ({
-            id: opt.id ?? `${ev.id ?? 'e'}-${i}`,
-            name: opt.name ?? opt.label ?? 'Opción',
-            odd: opt.odd ?? opt.odds ?? opt.price ?? 0,
-          })),
-        }));
-
-        setEvents(normalized);
-      } catch (err: any) {
-        console.error(err);
-        setError(err?.message ?? 'Error al cargar datos');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-  }, [router]);
+    fetchOpenEvents();
+  }, [router, checkAuth, fetchOpenEvents]);
 
   const handleLogout = () => {
-    authService.logout();
+    logout();
     router.push('/login');
   };
 
   const handlePlaceBet = async (line: any, stake: number) => {
     if (!line || stake <= 0) {
+      toast.warning('Ingresa un monto válido');
       return;
     }
 
     if (!user || user.balance < stake) {
-      setError('Saldo insuficiente para realizar esta apuesta');
+      toast.error('Saldo insuficiente para realizar esta apuesta');
       return;
     }
 
     try {
-      await betsService.createBet({
+      await createBet({
         userId: user.id,
         eventId: line.eventId,
         selectedOption: line.optionName,
         amount: stake,
       });
 
-      // Recargar perfil para actualizar balance
-      const profileRes: any = await userService.getProfile();
-      const profile = profileRes?.user ?? profileRes;
-      setUser({
-        id: profile.id,
-        username: profile.username || profile.name || 'Usuario',
-        balance: profile.balance ?? 0,
-      });
-
+      toast.success('Apuesta realizada exitosamente');
       setShowBetSlip(false);
       setBetLine(null);
+      
+      // Recargar eventos para refrescar datos
+      fetchOpenEvents();
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.response?.data?.message || 'Error al realizar la apuesta';
-      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
+  // Normalizar eventos para compatibilidad con EventsList
+  const normalizedEvents = (events || []).map((ev: any) => ({
+    ...ev,
+    options: (ev.options || []).map((opt: any, i: number) => ({
+      id: opt.id ?? `${ev.id ?? 'e'}-${i}`,
+      name: opt.name ?? opt.option ?? opt.label ?? 'Opción',
+      odd: opt.odds ?? opt.odd ?? opt.price ?? 0,
+    })),
+  }));
+
   return (
     <div className="min-h-screen bg-neutral-dark">
-      <Navbar logoSrc={'/images/logo.png'} balance={user?.balance} onLogout={handleLogout} />
-      <div className="min-h-[70px]" />
-      <div className="w-full">
-        <div className="flex">
-          <Sidebar username={user?.username} balance={user?.balance} />
+      <Navbar logoSrc={'/images/logo.png'} balance={user?.balance} onLogout={handleLogout} username={user?.username} />
+      <div className="px-6 pt-4">
+        <Breadcrumb />
+      </div>
+      <div className="w-full px-6 pt-2">
+        <Sidebar username={user?.username} balance={user?.balance} />
 
-          <div className="flex-1">
-            <div className="max-w-7xl mx-auto px-6">
+        <div className="w-full">
+          <div className="max-w-7xl mx-auto py-8">
 
-              {loading && (
-                <div className="bg-neutral-medium rounded-lg p-6 text-text-light">Cargando...</div>
-              )}
-
-              {error && (
-                <div className="bg-red-600 rounded-lg p-4 text-white">{error}</div>
-              )}
-
-              {!loading && !error && (
-                <div className="flex gap-6">
-                  <div className="flex-1">
-                    <div className="bg-neutral-medium rounded-lg p-6 text-text-light mb-6">
-                      <h3 className="text-xl font-semibold mb-4">Próximos eventos destacados</h3>
-                      <EventsList
-                        events={events}
-                        onSelectOption={(ev, opt) => {
-                          setBetLine({
-                            id: `${ev.id}-${opt.id}`,
-                            eventId: ev.id,
-                            eventName: ev.name,
-                            optionId: opt.id,
-                            optionName: opt.name,
-                            odd: opt.odd,
-                          });
-                          setShowBetSlip(true);
-                        }}
-                      />
-                    </div>
+              {/* Loading State */}
+              {isLoading && (
+                <div className="flex items-center justify-center py-20">
+                  <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-text-light/70">Cargando eventos disponibles...</p>
                   </div>
+                </div>
+              )}
 
-                  <div className="w-80">
-                    <div className="bg-neutral-medium rounded-lg p-4 text-text-light">
-                      <h4 className="font-semibold mb-2">Tu apuesta</h4>
-                      <p className="text-sm">Selecciona una cuota</p>
-                      {betLine && (
-                        <div className="mt-4 bg-neutral-dark/40 p-3 rounded">
-                          <div className="font-medium">{betLine.eventName}</div>
-                          <div className="text-sm text-text-light/80">{betLine.optionName} @{betLine.odd}</div>
-                        </div>
-                      )}
+              {/* Error State */}
+              {eventsError && (
+                <div className="bg-gradient-to-r from-error/20 to-transparent border-l-4 border-error rounded-lg p-6">
+                  <div className="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-error flex-shrink-0">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <div>
+                      <h4 className="text-text-light font-semibold mb-1">Error al cargar eventos</h4>
+                      <p className="text-text-light/70 text-sm">{eventsError}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              <BetSlip
-                open={showBetSlip}
-                line={betLine}
-                onClose={() => setShowBetSlip(false)}
-                onPlaceBet={handlePlaceBet}
-              />
+            {/* Events List */}
+            {!isLoading && !eventsError && (
+              <div className="bg-gradient-to-br from-neutral-medium/40 to-transparent rounded-2xl p-8 border border-neutral-700/50">
+                <EventsList
+                  events={normalizedEvents}
+                  onSelectOption={(ev, opt) => {
+                    setBetLine({
+                      id: `${ev.id}-${opt.id}`,
+                      eventId: ev.id,
+                      eventName: ev.name,
+                      optionId: opt.id,
+                      optionName: opt.name,
+                      odd: opt.odd,
+                    });
+                    setShowBetSlip(true);
+                  }}
+                />
+              </div>
+            )}
 
-            </div>
+            {/* Bet Slip */}
+            <BetSlip
+              open={showBetSlip}
+              line={betLine}
+              onClose={() => setShowBetSlip(false)}
+              onPlaceBet={handlePlaceBet}
+            />
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Bet, CreateBetDto } from '../interfaces/bet.interface';
 import { betsService } from '../services/bets.service';
+import { toast } from './toast.store';
 
 interface BetsState {
   bets: Bet[];
@@ -9,26 +10,33 @@ interface BetsState {
   error: string | null;
 
   // Actions
-  fetchUserBets: () => Promise<void>;
+  fetchUserBets: (userId?: string) => Promise<void>;
   createBet: (data: CreateBetDto) => Promise<Bet>;
   clearError: () => void;
   setCurrentBet: (bet: Bet | null) => void;
 }
 
-export const useBetsStore = create<BetsState>((set) => ({
+export const useBetsStore = create<BetsState>((set, get) => ({
   bets: [],
   currentBet: null,
   isLoading: false,
   error: null,
 
-  fetchUserBets: async () => {
+  fetchUserBets: async (userId: string) => {
+    if (!userId) {
+      set({ isLoading: false, error: 'Usuario no autenticado' });
+      return;
+    }
+
     set({ isLoading: true, error: null });
     try {
-      const bets = await betsService.getUserBets();
+      const bets = await betsService.getUserBets(userId);
       set({ bets, isLoading: false });
     } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Error al cargar apuestas';
       set({
-        error: error.response?.data?.message || 'Error al cargar apuestas',
+        bets: [],
+        error: errorMessage,
         isLoading: false,
       });
     }

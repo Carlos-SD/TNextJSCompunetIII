@@ -3,15 +3,15 @@ import { Bet, CreateBetDto } from '../interfaces/bet.interface';
 
 export const betsService = {
   async getUserBets(userId: string): Promise<Bet[]> {
-    return await apiService.get<Bet[]>(`/bets/user/${userId}`);
+    return await apiService.get(`/bets/user/${userId}`);
   },
 
   async createBet(data: CreateBetDto): Promise<Bet> {
-    return await apiService.post<Bet>('/bets', data);
+    return await apiService.post('/bets', data);
   },
 
   async getBetById(id: string): Promise<Bet> {
-    return await apiService.get<Bet>(`/bets/${id}`);
+    return await apiService.get(`/bets/${id}`);
   },
 };
 

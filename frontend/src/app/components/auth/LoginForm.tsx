@@ -3,41 +3,32 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { authService } from '@/app/services/auth/auth.service';
+import { useAuthStore } from '@/app/store/auth.store';
 import { LoginDto } from '@/app/interfaces/auth.interface';
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login, isLoading, error: storeError } = useAuthStore();
   const [formData, setFormData] = useState<LoginDto>({
     username: '',
     password: '',
   });
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
 
     try {
-      await authService.login(formData);
+      await login(formData);
       router.push('/dashboard');
       router.refresh();
-    } catch (err: any) {
-      console.error('Login error:', err);
-      const errorMessage = err?.response?.data?.message 
-        || err?.message 
-        || 'Error al iniciar sesión. Verifica tus credenciales.';
-      setError(errorMessage);
-      setIsLoading(false);
+    } catch (err) {
+      // El error ya se maneja en el store y muestra el toast
     }
   };
 
@@ -110,9 +101,9 @@ export default function LoginForm() {
         </div>
 
         {/* Error message */}
-        {error && (
+        {storeError && (
           <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg text-sm">
-            {error}
+            {storeError}
           </div>
         )}
 

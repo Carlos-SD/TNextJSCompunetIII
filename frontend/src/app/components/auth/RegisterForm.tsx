@@ -3,59 +3,59 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { authService } from '@/app/services/auth/auth.service';
+import { useAuthStore } from '@/app/store/auth.store';
+import { toast } from '@/app/store/toast.store';
 import { RegisterDto } from '@/app/interfaces/auth.interface';
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { register, isLoading } = useAuthStore();
   const [formData, setFormData] = useState<RegisterDto>({
     username: '',
     password: '',
     roles: ['user'],
   });
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError(null);
+    setLocalError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setLocalError(null);
 
     // Validaciones
     if (formData.username.length < 3) {
-      setError('El nombre de usuario debe tener al menos 3 caracteres');
+      const error = 'El nombre de usuario debe tener al menos 3 caracteres';
+      setLocalError(error);
+      toast.warning(error);
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+      const error = 'La contraseña debe tener al menos 6 caracteres';
+      setLocalError(error);
+      toast.warning(error);
       return;
     }
 
     if (formData.password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      const error = 'Las contraseñas no coinciden';
+      setLocalError(error);
+      toast.warning(error);
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      await authService.register(formData);
+      await register(formData);
       router.push('/dashboard');
       router.refresh();
-    } catch (err: any) {
-      console.error('Register error:', err);
-      const errorMessage = err?.response?.data?.message 
-        || err?.message 
-        || 'Error al registrar usuario. Intenta nuevamente.';
-      setError(errorMessage);
-      setIsLoading(false);
+    } catch (err) {
+      // El error ya se maneja en el store y muestra el toast
     }
   };
 
@@ -125,9 +125,9 @@ export default function RegisterForm() {
         </div>
 
         {/* Error message */}
-        {error && (
+        {localError && (
           <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg text-sm">
-            {error}
+            {localError}
           </div>
         )}
 
