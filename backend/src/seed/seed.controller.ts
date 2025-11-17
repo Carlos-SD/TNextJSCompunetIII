@@ -23,5 +23,15 @@ export class SeedController {
   async clearDatabase() {
     return await this.seedService.clearAll();
   }
+
+  @Post('clear')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Limpiar y ejecutar seed de datos' })
+  @ApiResponse({ status: 200, description: 'Base de datos limpiada y seed ejecutado exitosamente.' })
+  @ApiResponse({ status: 500, description: 'Error al ejecutar seed.' })
+  async clearAndSeed() {
+    await this.seedService.clearAll();
+    return await this.seedService.seedAll();
+  }
 }
 

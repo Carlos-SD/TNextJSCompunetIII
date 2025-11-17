@@ -5,8 +5,8 @@ const http = require('http');
 // Configuración
 const HOST = process.env.DB_HOST || 'localhost';
 const PORT = process.env.PORT || 3000;
-const ENDPOINT = '/seed';
-const CLEAR_ENDPOINT = '/seed/clear';
+const ENDPOINT = '/api/seed';
+const CLEAR_ENDPOINT = '/api/seed/clear';
 
 // Función para hacer la petición
 function makeRequest(path, callback) {
@@ -74,4 +74,3 @@ const clear = args.includes('--clear') || args.includes('-c');
 
 // Ejecutar
 runSeed(clear);
-

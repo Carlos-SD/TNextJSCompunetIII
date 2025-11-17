@@ -204,15 +204,99 @@ toast.warning('Advertencia');
 
 Las notificaciones ya estan integradas en las acciones de autenticacion (login, logout).
 
+## Testing
+
+El proyecto cuenta con pruebas automatizadas completas con alta cobertura:
+
+### Tecnologías Utilizadas
+
+**Pruebas Unitarias:**
+- **Jest** - Framework de testing
+- **React Testing Library** - Testing utilities para React
+- **@testing-library/jest-dom** - Custom matchers
+- **jest-environment-jsdom** - Entorno DOM para Jest
+
+**Pruebas E2E:**
+- **Playwright** - Framework para pruebas end-to-end
+- **Chromium** - Navegador automatizado
+
+### Características Importantes
+
+**Tests Unitarios:**
+- **100% Mockeados** - NO usan base de datos real
+- **Rápidos** - Se ejecutan en milisegundos
+- **Aislados** - No dependen de servicios externos
+- **Reproducibles** - Siempre dan los mismos resultados
+
+**Tests E2E:**
+- **Base de datos real** con seed automático
+- **Flujos completos** de usuario (login, apuestas, admin)
+- **Navegador real** con interacciones reales
+
+### Comandos Disponibles
+
+```bash
+# Tests unitarios (desarrollo)
+bun test
+
+# Tests unitarios con coverage
+bun run test:coverage
+
+# Tests E2E
+bun run test:e2e
+
+# Tests E2E con UI interactiva
+bun run test:e2e:ui
+
+# Todos los tests (CI)
+bun run test:all
+
+# Reiniciar BD con seed (antes de E2E)
+bun run test:seed
+```
+
+### Requisitos por Comando
+
+**Tests Unitarios (`test:coverage`):**
+- Backend: NO necesario
+- Frontend: NO necesario
+- Base de datos: NO necesaria
+- Son 100% mockeados, se ejecutan en memoria
+
+**Tests E2E (`test:e2e`):**
+- Backend: SÍ (debe estar corriendo en puerto 3000)
+- Frontend: Auto-start (Playwright lo inicia automáticamente)
+- Base de datos: SÍ (ejecutar `bun run test:seed` antes)
+
+**Seed (`test:seed`):**
+- Backend: SÍ (debe estar corriendo)
+- Frontend: NO necesario
+
+### Cobertura
+
+Los tests unitarios están configurados con los siguientes umbrales mínimos:
+- **Statements (declaraciones)**: 80%
+- **Lines (líneas)**: 75%
+- **Functions (funciones)**: 75%
+- **Branches (ramas)**: 45%
+
+Cobertura actual alcanzada:
+- **Statements: 93.84%** ✓
+- **Lines: 93.62%** ✓
+- **Functions: 87.83%** ✓
+- **Branches: 69.49%** ✓
+
+Total: **106 tests unitarios** cubriendo servicios, stores y componentes críticos
+
 ## Características
 
-### ✅ Autenticación (5%)
+### Autenticación (5%)
 - Sistema JWT (JSON Web Tokens)
 - Login y registro de usuarios
 - Tokens con expiración de 24 horas
 - Validación de contraseñas encriptadas
 
-### ✅ Autorización (5%)
+### Autorización (5%)
 - Dos roles: `user` y `admin`
 - Guards de autenticación con Passport JWT (`AuthGuard()`)
 - Guards de autorización basados en roles (`RolesGuard`)
