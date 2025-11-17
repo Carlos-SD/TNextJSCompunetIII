@@ -108,9 +108,25 @@ export const useAuthStore = create<AuthState>()(
         try {
           const updatedUser = await userService.getProfile();
           set({ user: updatedUser });
-        } catch (error) {
-          console.error('Error refreshing user:', error);
-          // Si falla la actualización, no hacer nada (mantener el usuario actual)
+        } catch (error: any) {
+          // Si es error 401, significa que el token es inválido (probablemente la BD se reinició)
+          if (error?.response?.status === 401) {
+            // Limpiar la sesión automáticamente
+            authService.logout();
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              error: null,
+            });
+            toast.warning('Tu sesión expiró. Por favor, inicia sesión nuevamente.');
+            
+            // Redirigir al login
+            if (typeof window !== 'undefined') {
+              window.location.href = '/login';
+            }
+          }
+          // Si es otro error, mantener el usuario actual
         }
       },
     }),

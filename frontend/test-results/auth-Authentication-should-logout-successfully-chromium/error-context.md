@@ -1,0 +1,171 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e7]: Apostólicos
+        - generic [ref=e8]:
+          - generic [ref=e9]: Bienvenido, usuario1
+          - generic [ref=e10]:
+            - img [ref=e12]
+            - generic [ref=e14]:
+              - paragraph [ref=e15]: Saldo
+              - paragraph [ref=e16]: 15,000
+    - button "Toggle sidebar" [ref=e17]:
+      - img [ref=e18]
+    - complementary [ref=e20]:
+      - generic [ref=e21]:
+        - paragraph [ref=e22]: Tu Perfil
+        - generic [ref=e23]:
+          - generic [ref=e24]: U
+          - generic [ref=e26]: usuario1
+      - navigation [ref=e27]:
+        - paragraph [ref=e28]: Navegación
+        - generic [ref=e29]:
+          - link "Inicio Ver eventos disponibles" [ref=e30] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e32]
+            - generic [ref=e35]:
+              - generic [ref=e36]: Inicio
+              - generic [ref=e37]: Ver eventos disponibles
+          - link "Mis Apuestas Historial completo" [ref=e38] [cursor=pointer]:
+            - /url: /dashboard/my-bets
+            - img [ref=e40]
+            - generic [ref=e44]:
+              - generic [ref=e45]: Mis Apuestas
+              - generic [ref=e46]: Historial completo
+      - button "Cerrar Sesión" [ref=e48]:
+        - img [ref=e49]
+        - text: Cerrar Sesión
+    - generic [ref=e51]:
+      - navigation [ref=e53]:
+        - list [ref=e55]:
+          - listitem [ref=e56]:
+            - generic [ref=e57]:
+              - img [ref=e58]
+              - text: Dashboard
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - generic [ref=e66]:
+              - heading "Fórmula 1 - Gran Premio" [level=3] [ref=e67]
+              - paragraph [ref=e68]: Carrera principal
+            - generic [ref=e69]: ABIERTO
+          - generic [ref=e70]:
+            - generic [ref=e71]: "Selecciona tu apuesta:"
+            - generic [ref=e72]:
+              - button "Hamilton 2.50" [ref=e73]:
+                - generic [ref=e74]:
+                  - generic [ref=e76]: Hamilton
+                  - generic [ref=e78]: "2.50"
+              - button "Verstappen 2.00" [ref=e80]:
+                - generic [ref=e81]:
+                  - generic [ref=e83]: Verstappen
+                  - generic [ref=e85]: "2.00"
+              - button "Leclerc 3.00" [ref=e87]:
+                - generic [ref=e88]:
+                  - generic [ref=e90]: Leclerc
+                  - generic [ref=e92]: "3.00"
+          - generic [ref=e94]:
+            - generic [ref=e95]: 3 opciones disponibles
+            - generic [ref=e96]: Haz click en una cuota para apostar
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - heading "Tennis - Roland Garros" [level=3] [ref=e100]
+              - paragraph [ref=e101]: Djokovic vs Nadal
+            - generic [ref=e102]: ABIERTO
+          - generic [ref=e103]:
+            - generic [ref=e104]: "Selecciona tu apuesta:"
+            - generic [ref=e105]:
+              - button "Djokovic 2.10" [ref=e106]:
+                - generic [ref=e107]:
+                  - generic [ref=e109]: Djokovic
+                  - generic [ref=e111]: "2.10"
+              - button "Nadal 1.80" [ref=e113]:
+                - generic [ref=e114]:
+                  - generic [ref=e116]: Nadal
+                  - generic [ref=e118]: "1.80"
+          - generic [ref=e120]:
+            - generic [ref=e121]: 2 opciones disponibles
+            - generic [ref=e122]: Haz click en una cuota para apostar
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - heading "NBA Finals" [level=3] [ref=e126]
+              - paragraph [ref=e127]: Lakers vs Celtics - Juego 7
+            - generic [ref=e128]: ABIERTO
+          - generic [ref=e129]:
+            - generic [ref=e130]: "Selecciona tu apuesta:"
+            - generic [ref=e131]:
+              - button "Celtics 1.90" [ref=e132]:
+                - generic [ref=e133]:
+                  - generic [ref=e135]: Celtics
+                  - generic [ref=e137]: "1.90"
+              - button "Lakers 2.20" [ref=e139]:
+                - generic [ref=e140]:
+                  - generic [ref=e142]: Lakers
+                  - generic [ref=e144]: "2.20"
+          - generic [ref=e146]:
+            - generic [ref=e147]: 2 opciones disponibles
+            - generic [ref=e148]: Haz click en una cuota para apostar
+        - generic [ref=e149]:
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - heading "Champions League" [level=3] [ref=e152]
+              - paragraph [ref=e153]: Manchester City vs Bayern Munich
+              - generic [ref=e154]:
+                - img [ref=e155]
+                - generic [ref=e157]: Ya apostaste $1000.00 por "Manchester City"
+            - generic [ref=e158]: YA APOSTADO
+          - generic [ref=e159]:
+            - generic [ref=e160]: "Opciones de este evento:"
+            - generic [ref=e161]:
+              - button "Manchester City✓ 1.90" [disabled] [ref=e162]:
+                - generic [ref=e163]:
+                  - generic [ref=e165]: Manchester City✓
+                  - generic [ref=e167]: "1.90"
+              - button "Bayern Munich 3.50" [disabled] [ref=e168]:
+                - generic [ref=e169]:
+                  - generic [ref=e171]: Bayern Munich
+                  - generic [ref=e173]: "3.50"
+              - button "Empate 3.00" [disabled] [ref=e174]:
+                - generic [ref=e175]:
+                  - generic [ref=e177]: Empate
+                  - generic [ref=e179]: "3.00"
+          - generic [ref=e180]:
+            - generic [ref=e181]: 3 opciones disponibles
+            - generic [ref=e182]: No puedes apostar dos veces en un evento
+        - generic [ref=e183]:
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - heading "Final Liga Española" [level=3] [ref=e186]
+              - paragraph [ref=e187]: Real Madrid vs Barcelona - Final de Copa del Rey
+              - generic [ref=e188]:
+                - img [ref=e189]
+                - generic [ref=e191]: Ya apostaste $500.00 por "Real Madrid"
+            - generic [ref=e192]: YA APOSTADO
+          - generic [ref=e193]:
+            - generic [ref=e194]: "Opciones de este evento:"
+            - generic [ref=e195]:
+              - button "Barcelona 2.80" [disabled] [ref=e196]:
+                - generic [ref=e197]:
+                  - generic [ref=e199]: Barcelona
+                  - generic [ref=e201]: "2.80"
+              - button "Real Madrid✓ 2.50" [disabled] [ref=e202]:
+                - generic [ref=e203]:
+                  - generic [ref=e205]: Real Madrid✓
+                  - generic [ref=e207]: "2.50"
+              - button "Empate 3.20" [disabled] [ref=e208]:
+                - generic [ref=e209]:
+                  - generic [ref=e211]: Empate
+                  - generic [ref=e213]: "3.20"
+          - generic [ref=e214]:
+            - generic [ref=e215]: 3 opciones disponibles
+            - generic [ref=e216]: No puedes apostar dos veces en un evento
+  - button "Open Next.js Dev Tools" [ref=e222] [cursor=pointer]:
+    - img [ref=e223]
+  - alert [ref=e226]
+```

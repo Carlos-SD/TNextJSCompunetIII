@@ -5,13 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -70,17 +64,78 @@ toast.warning('Advertencia');
 
 Las notificaciones ya estan integradas en las acciones de autenticacion (login, logout) y en el sistema de apuestas (apuesta exitosa, errores de saldo, etc.).
 
-## Learn More
+## Testing
 
-To learn more about Next.js, take a look at the following resources:
+El proyecto cuenta con pruebas automatizadas completas (cobertura objetivo: >80%):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Tecnologías Utilizadas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Pruebas Unitarias:**
+- **Jest** - Framework de testing
+- **React Testing Library** - Testing utilities para React
+- **@testing-library/jest-dom** - Custom matchers
+- **jest-environment-jsdom** - Entorno DOM para Jest
 
-## Deploy on Vercel
+**Pruebas E2E:**
+- **Playwright** - Framework para pruebas end-to-end
+- **Chromium** - Navegador automatizado
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Características Importantes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Tests Unitarios:**
+- **100% Mockeados** - NO usan base de datos real
+- **Rápidos** - Se ejecutan en milisegundos
+- **Aislados** - No dependen de servicios externos
+- **Reproducibles** - Siempre dan los mismos resultados
+
+**Tests E2E:**
+- **Base de datos real** con seed automático
+- **Flujos completos** de usuario (login, apuestas, admin)
+- **Navegador real** con interacciones reales
+
+### Comandos Disponibles
+
+```bash
+# Tests unitarios (desarrollo)
+bun test
+
+# Tests unitarios con coverage
+bun run test:coverage
+
+# Tests E2E
+bun run test:e2e
+
+# Tests E2E con UI interactiva
+bun run test:e2e:ui
+
+# Todos los tests (CI)
+bun run test:all
+
+# Reiniciar BD con seed (antes de E2E)
+bun run test:seed
+```
+
+### Requisitos por Comando
+
+**Tests Unitarios (`test:coverage`):**
+- Backend: NO necesario
+- Frontend: NO necesario
+- Base de datos: NO necesaria
+- Son 100% mockeados, se ejecutan en memoria
+
+**Tests E2E (`test:e2e`):**
+- Backend: SÍ (debe estar corriendo en puerto 3000)
+- Frontend: Auto-start (Playwright lo inicia automáticamente)
+- Base de datos: SÍ (ejecutar `bun run test:seed` antes)
+
+**Seed (`test:seed`):**
+- Backend: SÍ (debe estar corriendo)
+- Frontend: NO necesario
+
+### Cobertura
+
+Los tests unitarios están configurados para mantener un mínimo de 80% de cobertura en:
+- Branches (ramas)
+- Functions (funciones)
+- Lines (líneas)
+- Statements (declaraciones)
