@@ -3,30 +3,21 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/app/store/auth.store';
+import { useEventsStore } from '@/app/store/events.store';
 import { toast } from '@/app/store/toast.store';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
-import eventsService from '@/app/services/events.service';
 import { Event, CreateEventDto, UpdateEventDto, CloseEventDto } from '@/app/interfaces/event.interface';
 import EventFormModal from './components/EventFormModal';
 import CloseEventModal from './components/CloseEventModal';
 import ConfirmModal from '@/app/components/ConfirmModal';
 
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-}
-
 export default function AdminEventsPage() {
   const router = useRouter();
   const { user, logout, checkAuth, refreshUser } = useAuthStore();
+  const { events, isLoading, fetchEvents, createEvent, updateEvent, closeEvent, deleteEvent } = useEventsStore();
   
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [closingEvent, setClosingEvent] = useState<Event | null>(null);
@@ -59,22 +50,10 @@ export default function AdminEventsPage() {
 
     // Solo cargar eventos si el usuario está cargado y es admin
     if (user && user.roles?.includes('admin')) {
-      loadEvents();
+      fetchEvents();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, checkAuth, user]);
-
-  const loadEvents = async () => {
-    try {
-      setLoading(true);
-      const data = await eventsService.getAllEvents();
-      setEvents(data);
-    } catch (error) {
-      console.error('Error loading events:', error);
-      toast.error('Error al cargar eventos');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -83,37 +62,22 @@ export default function AdminEventsPage() {
 
   const handleCreateEvent = async (data: CreateEventDto | UpdateEventDto) => {
     try {
-      await eventsService.createEvent(data as CreateEventDto);
-      toast.success('Evento creado exitosamente');
+      await createEvent(data as CreateEventDto);
       setShowCreateModal(false);
-      loadEvents();
     } catch (error) {
+      // El error ya se maneja en el store
       console.error('Error creating event:', error);
-      const errorMessage = (error as ApiError)?.response?.data?.message || 'Error al crear evento';
-      toast.error(errorMessage);
       throw error;
     }
   };
 
   const handleUpdateEvent = async (id: string, data: UpdateEventDto) => {
     try {
-      await eventsService.updateEvent(id, data);
-      toast.success('Evento actualizado exitosamente');
+      await updateEvent(id, data);
       setEditingEvent(null);
-      loadEvents();
     } catch (error) {
-      const apiError = error as ApiError;
-      
-      let errorMessage = 'Error al actualizar evento';
-      if (apiError?.response?.data?.message) {
-        if (Array.isArray(apiError.response.data.message)) {
-          errorMessage = apiError.response.data.message.join(', ');
-        } else {
-          errorMessage = apiError.response.data.message;
-        }
-      }
-      
-      toast.error(errorMessage);
+      // El error ya se maneja en el store
+      console.error('Error updating event:', error);
       throw error;
     }
   };
@@ -132,27 +96,21 @@ export default function AdminEventsPage() {
     if (!deletingEvent) return;
 
     try {
-      await eventsService.deleteEvent(deletingEvent.id);
-      toast.success('Evento eliminado y dinero devuelto a los usuarios');
+      await deleteEvent(deletingEvent.id);
       setDeletingEvent(null);
-      loadEvents();
     } catch (error) {
+      // El error ya se maneja en el store
       console.error('Error deleting event:', error);
-      const errorMessage = (error as ApiError)?.response?.data?.message || 'Error al eliminar evento';
-      toast.error(errorMessage);
     }
   };
 
   const handleCloseEvent = async (id: string, data: CloseEventDto) => {
     try {
-      await eventsService.closeEvent(id, data);
-      toast.success('Evento cerrado y apuestas procesadas');
+      await closeEvent(id, data);
       setClosingEvent(null);
-      loadEvents();
     } catch (error) {
+      // El error ya se maneja en el store
       console.error('Error closing event:', error);
-      const errorMessage = (error as ApiError)?.response?.data?.message || 'Error al cerrar evento';
-      toast.error(errorMessage);
       throw error;
     }
   };
@@ -273,7 +231,7 @@ export default function AdminEventsPage() {
           </div>
 
           {/* Tabla de eventos */}
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
                 <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>

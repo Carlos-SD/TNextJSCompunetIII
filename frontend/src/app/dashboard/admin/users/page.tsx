@@ -3,28 +3,19 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/app/store/auth.store';
+import { useUsersStore } from '@/app/store/users.store';
 import { toast } from '@/app/store/toast.store';
 import Breadcrumb from '@/app/components/Breadcrumb';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import ConfirmModal from '@/app/components/ConfirmModal';
-import usersService from '@/app/services/users.service';
 import { User } from '@/app/interfaces/user.interface';
-
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-}
 
 export default function AdminUsersPage() {
   const router = useRouter();
   const { user: currentUser, logout, checkAuth, refreshUser } = useAuthStore();
+  const { users, isLoading, fetchAllUsers, updateUserRoles, deleteUser } = useUsersStore();
   
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
@@ -51,22 +42,10 @@ export default function AdminUsersPage() {
     }
 
     if (currentUser && currentUser.roles?.includes('admin')) {
-      loadUsers();
+      fetchAllUsers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, checkAuth, currentUser]);
-
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const data = await usersService.getAllUsers();
-      setUsers(data);
-    } catch (error) {
-      console.error('Error loading users:', error);
-      toast.error('Error al cargar usuarios');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -85,17 +64,10 @@ export default function AdminUsersPage() {
       : ['user', 'admin']; // Agregar admin
 
     try {
-      await usersService.updateUserRoles(user.id, newRoles);
-      toast.success(
-        hasAdminRole
-          ? `Rol de admin removido de ${user.username}`
-          : `Rol de admin agregado a ${user.username}`
-      );
-      loadUsers();
+      await updateUserRoles(user.id, newRoles);
     } catch (error) {
+      // El error ya se maneja en el store
       console.error('Error updating user roles:', error);
-      const errorMessage = (error as ApiError)?.response?.data?.message || 'Error al actualizar roles';
-      toast.error(errorMessage);
     }
   };
 
@@ -112,14 +84,11 @@ export default function AdminUsersPage() {
     if (!deletingUser) return;
 
     try {
-      await usersService.deleteUser(deletingUser.id);
-      toast.success(`Usuario ${deletingUser.username} eliminado exitosamente`);
+      await deleteUser(deletingUser.id);
       setDeletingUser(null);
-      loadUsers();
     } catch (error) {
+      // El error ya se maneja en el store
       console.error('Error deleting user:', error);
-      const errorMessage = (error as ApiError)?.response?.data?.message || 'Error al eliminar usuario';
-      toast.error(errorMessage);
     }
   };
 
@@ -205,7 +174,7 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Tabla de usuarios */}
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
                 <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
