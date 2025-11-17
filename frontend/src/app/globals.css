@@ -108,3 +108,13 @@ html {
   animation: slide-in 0.3s ease-out;
 }
 
+/* Select dropdown styling */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: var(--neutral-dark);
+  color: var(--text-light);
+}
+

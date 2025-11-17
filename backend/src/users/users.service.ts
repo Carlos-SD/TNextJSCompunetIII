@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../auth/entities/user.entity';
+import { Bet } from '../bets/entities/bet.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -16,6 +17,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Bet)
+    private readonly betRepository: Repository<Bet>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -100,6 +103,11 @@ export class UsersService {
 
   async remove(id: string): Promise<void> {
     const user = await this.findOne(id);
+    
+    // Eliminar todas las apuestas del usuario primero
+    await this.betRepository.delete({ userId: id });
+    
+    // Ahora eliminar el usuario
     await this.userRepository.remove(user);
   }
 
@@ -110,7 +118,9 @@ export class UsersService {
       throw new BadRequestException('Saldo insuficiente');
     }
 
-    user.balance = Number(user.balance) + amount;
+    const oldBalance = Number(user.balance);
+    user.balance = oldBalance + amount;
+    
     return await this.userRepository.save(user);
   }
 

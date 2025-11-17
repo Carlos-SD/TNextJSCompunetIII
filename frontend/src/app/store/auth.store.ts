@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AuthResponse, LoginCredentials, RegisterData } from '../interfaces/user.interface';
 import { authService } from '../services/auth/auth.service';
+import userService from '../services/user.service';
 import { toast } from './toast.store';
 
 interface AuthState {
@@ -18,6 +19,7 @@ interface AuthState {
   checkAuth: () => boolean;
   clearError: () => void;
   updateUser: (user: AuthResponse) => void;
+  refreshUser: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -95,6 +97,21 @@ export const useAuthStore = create<AuthState>()(
 
       updateUser: (user: AuthResponse) => {
         set({ user });
+      },
+
+      refreshUser: async () => {
+        const state = get();
+        if (!state.isAuthenticated || !state.token) {
+          return;
+        }
+        
+        try {
+          const updatedUser = await userService.getProfile();
+          set({ user: updatedUser });
+        } catch (error) {
+          console.error('Error refreshing user:', error);
+          // Si falla la actualización, no hacer nada (mantener el usuario actual)
+        }
       },
     }),
     {

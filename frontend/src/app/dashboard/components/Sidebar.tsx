@@ -2,10 +2,13 @@
 
 import React, { useState } from 'react';
 import { IoWalletOutline, IoHomeOutline, IoLogOutOutline } from 'react-icons/io5';
+import { MdAdminPanelSettings } from 'react-icons/md';
 import { SidebarMenuItems } from './SidebarMenuItems';
+import { useAuthStore } from '@/app/store/auth.store';
 
 export const Sidebar = ({ username, balance, onLogout, onToggle } : { username?: string; balance?: number | string; onLogout?: () => void; onToggle?: (isOpen: boolean) => void }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuthStore();
 
   const handleToggle = () => {
     const newState = !isOpen;
@@ -27,6 +30,16 @@ export const Sidebar = ({ username, balance, onLogout, onToggle } : { username?:
       subtitle: 'Historial completo'
     }
   ];
+
+  // Agregar panel de admin solo si el usuario es admin
+  if (user?.roles?.includes('admin')) {
+    menuItems.push({
+      path: '/dashboard/admin',
+      icon: <MdAdminPanelSettings/>,
+      title: 'Panel de Admin',
+      subtitle: 'Gestionar eventos'
+    });
+  }
 
   return (
     <>

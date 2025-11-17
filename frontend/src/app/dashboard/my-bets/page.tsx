@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/app/store/auth.store';
 import { useBetsStore } from '@/app/store/bets.store';
@@ -11,9 +11,15 @@ import { BetStatus } from '@/app/interfaces/bet.interface';
 
 export default function MyBetsPage() {
   const router = useRouter();
-  const { user, logout, checkAuth } = useAuthStore();
+  const { user, logout, checkAuth, refreshUser } = useAuthStore();
   const { bets, isLoading, error, fetchUserBets } = useBetsStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Refrescar el perfil del usuario al montar el componente
+  useEffect(() => {
+    refreshUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!checkAuth()) {
@@ -21,40 +27,17 @@ export default function MyBetsPage() {
       return;
     }
 
+    // Siempre refrescar apuestas desde el servidor al montar
     if (user?.id) {
       fetchUserBets(user.id);
     }
-  }, [router, checkAuth, user]);
+  }, [router, checkAuth, fetchUserBets, user?.id]);
 
   const handleLogout = () => {
     logout();
     router.push('/login');
   };
 
-  const stats = useMemo(() => {
-    const totalBets = bets.length;
-    const wonBets = bets.filter((b) => b.status === BetStatus.WON).length;
-    const lostBets = bets.filter((b) => b.status === BetStatus.LOST).length;
-    const pendingBets = bets.filter((b) => b.status === BetStatus.PENDING).length;
-    const totalStaked = bets.reduce((sum, b) => sum + Number(b.amount), 0);
-    const totalProfit = bets
-      .filter((b) => b.status === BetStatus.WON)
-      .reduce((sum, b) => sum + Number(b.profit), 0);
-    const netProfit = totalProfit - bets
-      .filter((b) => b.status === BetStatus.LOST)
-      .reduce((sum, b) => sum + Number(b.amount), 0);
-
-    return {
-      totalBets,
-      wonBets,
-      lostBets,
-      pendingBets,
-      totalStaked,
-      totalProfit,
-      netProfit,
-      winRate: totalBets > 0 ? ((wonBets / totalBets) * 100).toFixed(1) : '0',
-    };
-  }, [bets]);
 
   const getStatusBadge = (status: BetStatus) => {
     switch (status) {
@@ -99,40 +82,6 @@ export default function MyBetsPage() {
                 </div>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
               </div>
-
-              {/* Estadísticas Resumidas */}
-              {!isLoading && bets.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                  <StatCard
-                    title="Total Apostado"
-                    value={`${stats.totalStaked.toLocaleString()} COP`}
-                    icon="💰"
-                    color="from-blue-500/20 to-blue-600/20"
-                    borderColor="border-blue-500/30"
-                  />
-                  <StatCard
-                    title="Ganadas / Perdidas"
-                    value={`${stats.wonBets} / ${stats.lostBets}`}
-                    icon="📊"
-                    color="from-purple-500/20 to-purple-600/20"
-                    borderColor="border-purple-500/30"
-                  />
-                  <StatCard
-                    title="Tasa de Éxito"
-                    value={`${stats.winRate}%`}
-                    icon="🎯"
-                    color="from-green-500/20 to-green-600/20"
-                    borderColor="border-green-500/30"
-                  />
-                  <StatCard
-                    title="Balance Neto"
-                    value={`${stats.netProfit >= 0 ? '+' : ''}${stats.netProfit.toLocaleString()} COP`}
-                    icon={stats.netProfit >= 0 ? "📈" : "📉"}
-                    color={stats.netProfit >= 0 ? "from-success/20 to-success/30" : "from-danger/20 to-danger/30"}
-                    borderColor={stats.netProfit >= 0 ? "border-success/30" : "border-danger/30"}
-                  />
-                </div>
-              )}
 
               {error && (
                 <div className="bg-red-600/20 border-2 border-red-500 rounded-lg p-6 text-red-200 mb-6">
@@ -211,26 +160,6 @@ export default function MyBetsPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-interface StatCardProps {
-  title: string;
-  value: string;
-  icon: string;
-  color: string;
-  borderColor: string;
-}
-
-function StatCard({ title, value, icon, color, borderColor }: StatCardProps) {
-  return (
-    <div className={`bg-gradient-to-br ${color} rounded-xl p-6 border-2 ${borderColor} backdrop-blur-sm hover:scale-105 transition-transform duration-300`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-3xl">{icon}</span>
-      </div>
-      <p className="text-text-light/70 text-sm mb-1">{title}</p>
-      <p className="text-text-light font-bold text-xl">{value}</p>
     </div>
   );
 }

@@ -15,7 +15,7 @@ import Sidebar from './components/Sidebar';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, logout, checkAuth, updateUser } = useAuthStore();
+  const { user, logout, checkAuth, updateUser, refreshUser } = useAuthStore();
   const { events, isLoading, error: eventsError, fetchOpenEvents } = useEventsStore();
   const { createBet } = useBetsStore();
   
@@ -23,12 +23,18 @@ export default function DashboardPage() {
   const [showBetSlip, setShowBetSlip] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Refrescar el perfil del usuario al montar el componente
+  useEffect(() => {
+    refreshUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!checkAuth()) {
       router.push('/login');
       return;
     }
-
+    
     fetchOpenEvents();
   }, [router, checkAuth, fetchOpenEvents]);
 

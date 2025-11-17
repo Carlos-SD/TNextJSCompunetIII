@@ -4,28 +4,39 @@ export enum EventStatus {
 }
 
 export interface EventOption {
-  id: string;
-  option: string;
+  id?: string;
+  name: string;
+  option?: string;
   odds: number;
-  eventId: string;
+  eventId?: string;
 }
 
 export interface Event {
   id: string;
   name: string;
-  description: string;
-  status: EventStatus;
-  finalResult: string | null;
+  description?: string;
+  status: 'open' | 'closed' | EventStatus;
+  finalResult?: string | null;
+  winningOption?: string | null;
   createdAt: string;
   updatedAt: string;
-  options: EventOption[];
+  options?: EventOption[];
 }
 
 export interface CreateEventDto {
   name: string;
-  description: string;
+  description?: string;
   options: {
-    option: string;
+    name: string;
+    odds: number;
+  }[];
+}
+
+export interface UpdateEventDto {
+  name?: string;
+  description?: string;
+  options?: {
+    name: string;
     odds: number;
   }[];
 }

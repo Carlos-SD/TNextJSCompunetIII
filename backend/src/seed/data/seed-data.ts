@@ -34,6 +34,7 @@ export const seedData = {
       name: 'Final Liga Española',
       description: 'Real Madrid vs Barcelona - Final de Copa del Rey',
       status: EventStatus.OPEN,
+      finalResult: undefined,
       options: [
         { name: 'Real Madrid', odds: 2.5 },
         { name: 'Barcelona', odds: 2.8 },
@@ -44,6 +45,7 @@ export const seedData = {
       name: 'Champions League',
       description: 'Manchester City vs Bayern Munich',
       status: EventStatus.OPEN,
+      finalResult: undefined,
       options: [
         { name: 'Manchester City', odds: 1.9 },
         { name: 'Bayern Munich', odds: 3.5 },
@@ -54,6 +56,7 @@ export const seedData = {
       name: 'NBA Finals',
       description: 'Lakers vs Celtics - Juego 7',
       status: EventStatus.OPEN,
+      finalResult: undefined,
       options: [
         { name: 'Lakers', odds: 2.2 },
         { name: 'Celtics', odds: 1.9 },
@@ -73,6 +76,7 @@ export const seedData = {
       name: 'Tennis - Roland Garros',
       description: 'Djokovic vs Nadal',
       status: EventStatus.OPEN,
+      finalResult: undefined,
       options: [
         { name: 'Djokovic', odds: 2.1 },
         { name: 'Nadal', odds: 1.8 },
@@ -82,6 +86,7 @@ export const seedData = {
       name: 'Fórmula 1 - Gran Premio',
       description: 'Carrera principal',
       status: EventStatus.OPEN,
+      finalResult: undefined,
       options: [
         { name: 'Hamilton', odds: 2.5 },
         { name: 'Verstappen', odds: 2.0 },

@@ -68,6 +68,7 @@ export class SeedService {
           name: eventData.name,
           description: eventData.description,
           status: eventData.status,
+          finalResult: (eventData as any).finalResult || null,
         });
         const savedEvent = await this.eventRepository.save(event);
 

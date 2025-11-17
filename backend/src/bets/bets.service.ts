@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,6 +19,7 @@ export class BetsService {
     @InjectRepository(Bet)
     private readonly betRepository: Repository<Bet>,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => EventsService))
     private readonly eventsService: EventsService,
   ) {}
 
@@ -133,7 +136,7 @@ export class BetsService {
         const profit = Number(bet.amount) * Number(bet.odds);
         bet.status = BetStatus.WON;
         bet.profit = profit;
-
+        
         // Abonar la ganancia al saldo del usuario
         await this.usersService.updateBalance(bet.userId, profit);
       } else {
@@ -144,6 +147,17 @@ export class BetsService {
 
       await this.betRepository.save(bet);
     }
+  }
+
+  async updateBetOption(id: string, newOptionName: string): Promise<Bet> {
+    const bet = await this.betRepository.findOne({ where: { id } });
+    
+    if (!bet) {
+      throw new NotFoundException(`Apuesta con ID '${id}' no encontrada`);
+    }
+
+    bet.selectedOption = newOptionName;
+    return await this.betRepository.save(bet);
   }
 
   async remove(id: string): Promise<void> {
