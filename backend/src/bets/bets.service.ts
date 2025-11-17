@@ -40,6 +40,21 @@ export class BetsService {
       throw new BadRequestException('El evento no está disponible para apuestas');
     }
 
+    // Verificar que el usuario no tenga ya una apuesta en este evento
+    const existingBet = await this.betRepository.findOne({
+      where: {
+        userId: createBetDto.userId,
+        eventId: createBetDto.eventId,
+        status: BetStatus.PENDING,
+      },
+    });
+
+    if (existingBet) {
+      throw new BadRequestException(
+        'Ya tienes una apuesta activa en este evento. No puedes apostar más de una vez por evento.',
+      );
+    }
+
     // Verificar que la opción seleccionada existe en el evento
     const selectedOption = event.options.find(
       (option) => option.name === createBetDto.selectedOption,

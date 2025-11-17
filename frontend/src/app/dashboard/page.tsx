@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, logout, checkAuth, updateUser, refreshUser } = useAuthStore();
   const { events, isLoading, error: eventsError, fetchOpenEvents } = useEventsStore();
-  const { createBet } = useBetsStore();
+  const { createBet, fetchUserBets, bets } = useBetsStore();
   
   const [betLine, setBetLine] = useState<any | null>(null);
   const [showBetSlip, setShowBetSlip] = useState(false);
@@ -36,7 +36,12 @@ export default function DashboardPage() {
     }
     
     fetchOpenEvents();
-  }, [router, checkAuth, fetchOpenEvents]);
+    
+    // Obtener las apuestas del usuario para verificar eventos ya apostados
+    if (user?.id) {
+      fetchUserBets(user.id);
+    }
+  }, [router, checkAuth, fetchOpenEvents, fetchUserBets, user?.id]);
 
   const handleLogout = () => {
     logout();
@@ -75,8 +80,11 @@ export default function DashboardPage() {
         // No mostramos error al usuario ya que la apuesta fue exitosa
       }
       
-      // Recargar eventos para refrescar datos
+      // Recargar eventos y apuestas para refrescar datos
       fetchOpenEvents();
+      if (user?.id) {
+        fetchUserBets(user.id);
+      }
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.response?.data?.message || 'Error al realizar la apuesta';
@@ -93,6 +101,13 @@ export default function DashboardPage() {
       odd: opt.odds ?? opt.odd ?? opt.price ?? 0,
     })),
   }));
+
+  // Obtener IDs de eventos en los que el usuario ya ha apostado (apuestas pendientes)
+  const betEventIds = new Set(
+    (bets || [])
+      .filter((bet: any) => bet.status === 'pending')
+      .map((bet: any) => bet.eventId)
+  );
 
   return (
     <div className="min-h-screen bg-neutral-dark">
@@ -136,7 +151,15 @@ export default function DashboardPage() {
               <div className="bg-gradient-to-br from-neutral-medium/40 to-transparent rounded-2xl p-8 border border-neutral-700/50">
                 <EventsList
                   events={normalizedEvents}
+                  betEventIds={betEventIds}
+                  userBets={bets || []}
                   onSelectOption={(ev, opt) => {
+                    // Verificar si ya apostó en este evento
+                    if (betEventIds.has(ev.id)) {
+                      toast.warning('Ya tienes una apuesta activa en este evento');
+                      return;
+                    }
+                    
                     setBetLine({
                       id: `${ev.id}-${opt.id}`,
                       eventId: ev.id,
