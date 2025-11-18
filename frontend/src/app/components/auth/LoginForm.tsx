@@ -13,7 +13,6 @@ export default function LoginForm() {
     username: '',
     password: '',
   });
-  const [rememberMe, setRememberMe] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,22 +81,6 @@ export default function LoginForm() {
             minLength={6}
             className="w-full bg-neutral-medium text-text-light py-3 px-4 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-500"
           />
-        </div>
-
-        {/* Remember me y Forgot Password */}
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-text-light cursor-pointer">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-600 bg-neutral-medium text-primary focus:ring-primary focus:ring-2"
-            />
-            <span className="text-sm">Recordarme</span>
-          </label>
-          <a href="#" className="text-text-light text-sm hover:underline">
-            ¿Olvidaste tu contraseña?
-          </a>
         </div>
 
         {/* Error message */}
