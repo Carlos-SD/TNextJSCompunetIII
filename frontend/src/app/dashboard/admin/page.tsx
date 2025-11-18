@@ -55,7 +55,6 @@ export default function AdminDashboardPage() {
       <Navbar 
         logoSrc={'/images/logo.png'} 
         balance={user?.balance} 
-        onLogout={handleLogout} 
         username={user?.username} 
       />
       <Sidebar username={user?.username} balance={user?.balance} onLogout={handleLogout} onToggle={setSidebarOpen} />
