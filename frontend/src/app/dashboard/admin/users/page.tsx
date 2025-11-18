@@ -113,11 +113,6 @@ export default function AdminUsersPage() {
     return filteredUsers.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredUsers, currentPage, itemsPerPage]);
 
-  const breadcrumbItems = [
-    { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Panel de Admin', path: '/dashboard/admin' },
-    { name: 'Gestión de Usuarios', path: '/dashboard/admin/users' },
-  ];
 
   if (!currentUser) {
     return (
@@ -132,12 +127,20 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-dark to-neutral-darker text-text-light">
-      <Navbar onLogout={handleLogout} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
-      <Sidebar onToggle={setSidebarOpen} sidebarOpen={sidebarOpen} />
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-72' : 'ml-0'} pt-[73px]`}>
-        <div className="container mx-auto px-4 py-6">
-          <Breadcrumb items={breadcrumbItems} />
+    <div className="min-h-screen bg-neutral-dark">
+      <Navbar 
+        logoSrc={'/images/logo.png'} 
+        balance={currentUser?.balance} 
+        username={currentUser?.username} 
+      />
+      <Sidebar username={currentUser?.username} balance={currentUser?.balance} onLogout={handleLogout} onToggle={setSidebarOpen} />
+      
+      <div className={`transition-all duration-300 pt-[73px] ${sidebarOpen ? 'ml-72' : 'ml-0'}`}>
+        <div className="px-6 pt-4">
+          <Breadcrumb />
+        </div>
+        <div className="w-full px-6 pt-2">
+          <div className="max-w-7xl mx-auto py-8">
           <h1 className="text-4xl font-extrabold text-primary mb-8 mt-4">Gestión de Usuarios</h1>
 
           {/* Controles de tabla */}
@@ -243,7 +246,7 @@ export default function AdminUsersPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-text-light/70 text-sm">
-                            {user.bets?.length || 0} apuestas
+                            N/A
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -315,20 +318,21 @@ export default function AdminUsersPage() {
               </button>
             </div>
           )}
+
+          {deletingUser && (
+            <ConfirmModal
+              title="¿Eliminar usuario?"
+              message={`¿Estás seguro de que deseas eliminar al usuario "${deletingUser.username}"? Se eliminarán todas sus apuestas, historial y datos asociados. Esta acción no se puede deshacer.`}
+              confirmText="Sí, eliminar"
+              cancelText="Cancelar"
+              type="danger"
+              onConfirm={confirmDeleteUser}
+              onCancel={() => setDeletingUser(null)}
+            />
+          )}
+          </div>
         </div>
       </div>
-
-      {deletingUser && (
-        <ConfirmModal
-          title="¿Eliminar usuario?"
-          message={`¿Estás seguro de que deseas eliminar al usuario "${deletingUser.username}"? Se eliminarán todas sus apuestas, historial y datos asociados. Esta acción no se puede deshacer.`}
-          confirmText="Sí, eliminar"
-          cancelText="Cancelar"
-          type="danger"
-          onConfirm={confirmDeleteUser}
-          onCancel={() => setDeletingUser(null)}
-        />
-      )}
     </div>
   );
 }
