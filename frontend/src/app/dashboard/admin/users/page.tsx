@@ -10,6 +10,7 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import ConfirmModal from '@/app/components/ConfirmModal';
 import { User } from '@/app/interfaces/user.interface';
+import Forbidden from '@/app/forbidden';
 
 export default function AdminUsersPage() {
   const router = useRouter();
@@ -35,12 +36,7 @@ export default function AdminUsersPage() {
       router.push('/login');
       return;
     }
-
-    if (currentUser && !currentUser.roles?.includes('admin')) {
-      router.push('/dashboard');
-      return;
-    }
-
+    // No redirigir si no es admin, solo mostrar la página de forbidden
     if (currentUser && currentUser.roles?.includes('admin')) {
       fetchAllUsers();
     }
@@ -129,6 +125,10 @@ export default function AdminUsersPage() {
         <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
+  }
+
+  if (!currentUser.roles?.includes('admin')) {
+    return <Forbidden />;
   }
 
   return (

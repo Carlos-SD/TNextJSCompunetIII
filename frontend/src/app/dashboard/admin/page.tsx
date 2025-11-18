@@ -7,6 +7,7 @@ import Breadcrumb from '@/app/components/Breadcrumb';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import Link from 'next/link';
+import Forbidden from '@/app/forbidden';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -24,13 +25,8 @@ export default function AdminDashboardPage() {
       router.push('/login');
       return;
     }
-
-    // Esperar a que el usuario esté cargado antes de verificar
-    if (user && !user.roles?.includes('admin')) {
-      router.push('/dashboard');
-      return;
-    }
-  }, [router, checkAuth, user]);
+    // No redirigir si no es admin, solo mostrar la página de forbidden
+  }, [router, checkAuth]);
 
   const handleLogout = () => {
     logout();
@@ -49,9 +45,9 @@ export default function AdminDashboardPage() {
     );
   }
 
-  // Si no es admin, no mostrar nada (será redirigido)
+  // Si no es admin, mostrar página de acceso denegado
   if (!user.roles?.includes('admin')) {
-    return null;
+    return <Forbidden />;
   }
 
   return (

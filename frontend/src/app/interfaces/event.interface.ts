@@ -37,7 +37,7 @@ export interface UpdateEventDto {
   description?: string;
   options?: {
     name: string;
-    odds: number;
+    odds?: number;
   }[];
 }
 

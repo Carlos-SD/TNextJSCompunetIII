@@ -64,7 +64,7 @@ export default function EventFormModal({ event, onClose, onSubmit, title }: Even
           .map(opt => ({
             name: opt.name.trim(),
             // Solo enviar cuotas al crear evento (no al editar)
-            ...(event ? {} : { odds: opt.odds }),
+            ...(event ? {} : { odds: opt.odds || 1.5 }),
           })),
       };
 

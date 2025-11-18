@@ -12,6 +12,7 @@ import { Event, CreateEventDto, UpdateEventDto, CloseEventDto } from '@/app/inte
 import EventFormModal from './components/EventFormModal';
 import CloseEventModal from './components/CloseEventModal';
 import ConfirmModal from '@/app/components/ConfirmModal';
+import Forbidden from '@/app/forbidden';
 
 export default function AdminEventsPage() {
   const router = useRouter();
@@ -41,13 +42,6 @@ export default function AdminEventsPage() {
       router.push('/login');
       return;
     }
-
-    // Esperar a que el usuario esté cargado antes de verificar
-    if (user && !user.roles?.includes('admin')) {
-      router.push('/dashboard');
-      return;
-    }
-
     // Solo cargar eventos si el usuario está cargado y es admin
     if (user && user.roles?.includes('admin')) {
       fetchEvents();
@@ -152,9 +146,9 @@ export default function AdminEventsPage() {
     );
   }
 
-  // Si no es admin, no mostrar nada (será redirigido)
+  // Si no es admin, mostrar página de acceso denegado
   if (!user.roles?.includes('admin')) {
-    return null;
+    return <Forbidden />;
   }
 
   return (
